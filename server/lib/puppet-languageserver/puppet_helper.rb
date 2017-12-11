@@ -137,6 +137,30 @@ module PuppetLanguageServer
     def self._load_types
       @types_loaded = false
       @types_hash = {}
+
+      env = Puppet.lookup(:current_environment)
+      autoloader = Puppet::Util::Autoload.new(self, 'puppet/type')
+      autoloader.files_to_load.each do |file|
+      #autoloader.files_to_load.select { |f| f =~ /\/file\./}.each do |file|
+        absolute_name = Puppet::Util::Autoload.get_file(file, env)
+        next if absolute_name.nil?
+
+#        puts "#{absolute_name}"
+        results = PuppetLanguageServer::PuppetRubyHelper::extract_puppet_types_from_ruby(absolute_name)
+        results.each { |result| @types_hash[result.name] = result }
+      end
+
+      type_count = @types_hash.count
+      PuppetLanguageServer.log_message(:debug, "[PuppetHelper::_load_types] Finished loading #{type_count} types")
+
+      @types_loaded = true
+      nil
+    end
+    #**** private_class_method :_load_types
+
+    def self._load_types_native
+      @types_loaded = false
+      @types_hash = {}
       # This is an expensive call
       # From https://github.com/puppetlabs/puppet/blob/ebd96213cab43bb2a8071b7ac0206c3ed0be8e58/lib/puppet/metatype/manager.rb#L182-L189
 
@@ -165,7 +189,7 @@ module PuppetLanguageServer
       @types_loaded = true
       nil
     end
-    private_class_method :_load_types
+    #**** private_class_method :_load_types_native
 
     def self._load_functions
       @functions_loaded = false

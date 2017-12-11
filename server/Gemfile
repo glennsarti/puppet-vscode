@@ -26,6 +26,9 @@ group :development do
   gem "win32-service", "<= 0.8.8",  :require => false, :platforms => ["mswin", "mingw", "x64_mingw"]
 end
 
+# trying it out
+gem "parser",  :require => false
+
 # Evaluate Gemfile.local if it exists
 if File.exists? "#{__FILE__}.local"
   eval(File.read("#{__FILE__}.local"), binding)
