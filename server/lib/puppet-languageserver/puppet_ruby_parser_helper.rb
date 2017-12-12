@@ -8,7 +8,12 @@ module PuppetLanguageServer
     class FauxPuppetType
       attr_accessor :name
       attr_accessor :doc
-      attr
+      # https://github.com/puppetlabs/puppet/blob/c4f42549261d57d2b839d265f1d48dd9cc1fcfc3/lib/puppet/type.rb#L130-L138
+      attr_accessor :allattrs
+
+      def initialize
+        @allattrs = []
+      end
     end
 
     # public
@@ -26,9 +31,9 @@ module PuppetLanguageServer
       recurse_find_all_nodes_with_type(:block, parsed) do |node|
         node.children.select { |s| !s.nil? && s.type == :send }.each do |typenode|
           parent, methodname, args = extract_send(typenode)
-          if parent == 'Puppet::Type' && methodname == 'newtype' && args.count == 1
+          if parent == 'Puppet::Type' && methodname == 'newtype' && args.count >= 1
             fpt = FauxPuppetType.new
-            fpt.name = args[0].intern
+            fpt.name = args[0].children[0]
             populate_faux_puppet_type(fpt, node)
             types << fpt
             # require 'pry'; binding.pry
@@ -44,9 +49,9 @@ module PuppetLanguageServer
         recurse_find_all_nodes_with_type(:block, module_node) do |node|
           node.children.select { |s| !s.nil? && s.type == :send }.each do |typenode|
             parent, methodname, args = extract_send(typenode)
-            if parent == 'Type' && methodname == 'newtype' && args.count == 1
+            if parent == 'Type' && methodname == 'newtype' && args.count >= 1
               fpt = FauxPuppetType.new
-              fpt.name = args[0].intern
+              fpt.name = args[0].children[0]
               populate_faux_puppet_type(fpt, node)
               types << fpt
                 # require 'pry'; binding.pry
@@ -66,34 +71,48 @@ module PuppetLanguageServer
     def self.populate_faux_puppet_type(fpt, node)
       recurse_find_all_nodes_with_type(:block, node, 0) do |block_node|
 
-        require 'pry'; binding.pry
-        puts "!!!"
-
         # Find the documentation assignment
         recurse_find_all_nodes_with_type(:ivasgn, block_node, 2) do |iva_node|
           if iva_node.children[0] == :@doc
-            fpt.doc = get_string_from_node(iva_node.children[1])
+            fpt.doc = get_string_from_node(iva_node.children[1]).rstrip
           end
-        end
+        end if fpt.doc.nil?
 
-        # TODO find the send call to desc
-        # s(:send, nil, :desc,
-        # s(:dstr,
-        #   s(:str, "A resource type for creating new run stages.  Once a stage is available,\n"),
-        #   s(:str, "    classes can be assigned to it by declaring them with the resource-like syntax\n"),
-        #   s(:str, "    and using\n"),
-        #   s(:str, "    [the `stage` metaparam
+        # Find the documentation method call
+        recurse_find_all_nodes_with_type(:send, block_node, 2) do |send_node|
+          parent, methodname, args = extract_send(send_node)
+          if parent.nil? && methodname == 'desc'
+            fpt.doc = get_string_from_node(args[0]).rstrip
+          end
+        end if fpt.doc.nil?
 
       end
     end
 
     def self.get_string_from_node(node)
+      return nil if node.nil?
       return node.children[0].strip if node.type == :str
+      return node.children[0].to_s if node.type == :sym
 
       if node.type == :dstr
-        # Convert the child :str into a single stripped string
-        # TODO Don't just strip.  Only strip X chars based on the second or more nstance where there's text.
-        return node.children.map { |s| s.children[0].strip }.join("\n")
+        # Convert the child :str into a single stripped string where the indentation is taken into account
+        strip_length = -1
+        return node.children.map do |s|
+          munged = s.children[0]
+          if strip_length == -1
+            strip_length = s.children[0].index(/\S/) if s.children[0].start_with?(' ')
+          end
+
+          unless strip_length == -1
+            if munged.length >= strip_length
+              munged = munged.slice(strip_length, munged.length - strip_length)
+            else
+              munged = "\n"
+            end
+          end
+
+          munged
+        end.join
       end
 
       nil
@@ -117,44 +136,7 @@ module PuppetLanguageServer
 #puts "NODE #{node}"
       parent = recurse_constants(node.children[0])
       methodname = node.children[1].to_s
-      args = []
-
-      index = 2
-      while index < node.children.count
-        child = node.children[index]
-        case
-        when child.is_a?(Parser::AST::Node) && child.type == :sym
-          args << child.children[0].to_s
-        when child.is_a?(Parser::AST::Node) && child.type == :hash
-          # Do nothing - Hash
-          # Example
-          # => s(:hash,
-          # s(:pair,
-          #   s(:sym, :boolean),
-          #   s(:true)),
-          # s(:pair,
-          #   s(:sym, :parent),
-          #   s(:const,
-          #     s(:const,
-          #       s(:const, nil, :Puppet), :Parameter), :Boolean)))
-        when child.is_a?(Parser::AST::Node) && child.type == :dstr
-          # Do nothing - Docstring
-          # Example
-          # => s(:dstr,
-          # s(:str, "A command for validating the file's syntax before replacing it. If\n"),
-          # s(:str, "      Puppet would need to rewrite a file due to new `source` or `content`, it\n"),
-          # s(:str, "      will check the new content's validity first. If validation fails, the file\n"),
-          # s(:str, "      resource will fail.\n"),
-        when child.is_a?(Parser::AST::Node) && child.type == :send
-          # Do nothing - Nested send
-        when child.is_a?(Parser::AST::Node) && child.type == :lvar
-          # Do nothing - lvar !?!?
-        else
-          #require 'pry'; binding.pry
-          #raise("Unable to parse #{child}")
-        end
-        index += 1
-      end
+      args = node.children.slice(2, node.children.count - 2)
 
       return parent, methodname, args
     end

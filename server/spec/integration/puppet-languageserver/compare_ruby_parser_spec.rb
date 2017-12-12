@@ -51,8 +51,16 @@ describe 'Compare puppet ruby parser helper with actual ruby' do
   load_types_from_puppet.select { |t,v| t.to_s !~ /nagios/}.each do |puppet_type_name, puppet_type_value|
 
     describe "The puppet type #{puppet_type_name}" do
+      let(:subject) { PuppetLanguageServer::PuppetHelper.get_type(puppet_type_name) }
+      let(:native) { @native_types_hash[puppet_type_name] }
+
       it "should have the same documentation" do
-        expect(PuppetLanguageServer::PuppetHelper.get_type(puppet_type_name).doc).to eq(@native_types_hash[puppet_type_name].doc)
+        expect(subject.doc).to eq(native.doc)
+      end
+
+      it "should have the same list of attributes" do
+        require 'pry'; binding.pry
+        expect(subject.allattrs).to match_array(native.allattrs)
       end
     end
 
