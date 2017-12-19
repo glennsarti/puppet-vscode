@@ -57,7 +57,12 @@ task :gem_revendor do
       :directory => 'multipart-post',
       :github_repo => 'https://github.com/nicksieger/multipart-post.git',
       :github_ref => 'v2.0.0',
-    }
+    },
+    {
+      :directory => 'faraday_middleware',
+      :github_repo => 'https://github.com/lostisland/faraday_middleware.git',
+      :github_ref => 'v0.12.2',
+    },
   ]
 
   # Clean out the vendor directory first

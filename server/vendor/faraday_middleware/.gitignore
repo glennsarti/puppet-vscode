@@ -1,0 +1,35 @@
+# TextMate
+*.tmproj
+tmtags
+
+# emails
+*~
+\#*
+.\#*
+
+# vim
+*.swp
+
+# General
+.ruby-version
+bin
+coverage
+rdoc
+doc
+log
+.yardoc
+tmp
+
+# Bundler
+*.gem
+.bundle
+Gemfile*.lock
+pkg
+*.gem
+vendor/bundle
+
+# Rubinius
+*.rbc
+
+# RubyMine
+.idea

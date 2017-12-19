@@ -1,0 +1,34 @@
+sudo: false
+bundler_args: --without development
+language: ruby
+rvm:
+  - 1.9.3
+  - 2.0
+  - 2.1
+  - 2.2
+  - 2.3.0
+  - 2.4.0
+  - jruby-head
+  - rbx-2
+gemfile:
+  - Gemfile
+  - Gemfile-0.9.rb
+matrix:
+  exclude:
+    - rvm: 2.4.0
+      gemfile: Gemfile-0.9.rb
+  allow_failures:
+    - rvm: jruby-head
+    - rvm: rbx-2
+  fast_finish: true
+deploy:
+  provider: rubygems
+  api_key:
+    secure: H5OPkiOcBFpI34nxIdGc/Rj6nNQKBUR0ccyKBubFroXcVDftpA+TVx8Vq+sjYaM1GuZI1F3OJPLHXmuyYsnJ3M3yltG2pYpJehULdpVU6yMu6eaQ8UAzA8wbmM1ANWEGQi1giulnxHw9M08qFzECpZvDFJWjtCg9lws64emqPLA=
+  gem: faraday_middleware
+  on:
+    tags: true
+    repo: lostisland/faraday_middleware
+    rvm: 2.4.0
+    gemfile: Gemfile
+    condition: "$TRAVIS_RUBY_VERSION == 2.4.0"
