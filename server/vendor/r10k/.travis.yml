@@ -1,0 +1,17 @@
+---
+language: ruby
+bundler_args: "--without system"
+script: "bundle exec rspec --color --format documentation spec/unit"
+notifications:
+  email: false
+sudo: false
+before_install: gem update bundler
+rvm:
+  - "2.3.0"
+  - "2.2.0"
+  - "2.1.0"
+  - "2.0.0"
+  - "1.9.3"
+  - "jruby-19mode"
+jdk:
+    - oraclejdk8
