@@ -47,6 +47,11 @@ task :gem_revendor do
       :directory => 'puppet_forge',
       :github_repo => 'https://github.com/puppetlabs/forge-ruby.git',
       :github_ref => 'v2.2.8',
+    },
+    {
+      :directory => 'faraday',
+      :github_repo => 'https://github.com/lostisland/faraday.git',
+      :github_ref => 'v0.13.1',
     }
   ]
 
@@ -72,6 +77,7 @@ task :gem_revendor do
     # Cleanup the gem directory...
     FileUtils.rm_rf(File.join(gem_dir,'.git'))
     FileUtils.rm_rf(File.join(gem_dir,'spec'))
+    FileUtils.rm_rf(File.join(gem_dir,'test'))
   end
 
   # Generate the README
