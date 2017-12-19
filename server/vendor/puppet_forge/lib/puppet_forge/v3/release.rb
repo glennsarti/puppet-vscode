@@ -1,0 +1,56 @@
+require 'puppet_forge/v3/base'
+require 'puppet_forge/v3/module'
+
+module PuppetForge
+  module V3
+
+    # Models a specific release version of a Puppet Module on the Forge.
+    class Release < Base
+      lazy :module, 'Module'
+
+      # Returns a fully qualified URL for downloading this release from the Forge.
+      #
+      # @return [String] fully qualified download URL for release
+      def download_url
+        if URI.parse(file_uri).host.nil?
+          URI.join(PuppetForge.host, file_uri[1..-1]).to_s
+        else
+          file_uri
+        end
+      end
+
+      # Downloads the Release tarball to the specified file path.
+      #
+      # @param path [Pathname]
+      # @return [void]
+      def download(path)
+        resp = self.class.conn.get(download_url)
+        path.open('wb') { |fh| fh.write(resp.body) }
+      rescue Faraday::ResourceNotFound => e
+        raise PuppetForge::ReleaseNotFound, (_("The module release %{release_slug} does not exist on %{url}.") % {release_slug: slug, url: self.class.conn.url_prefix}), e.backtrace
+      rescue Faraday::ClientError => e
+        if e.response && e.response[:status] == 403
+          raise PuppetForge::ReleaseForbidden.from_response(e.response)
+        else
+          raise e
+        end
+      end
+
+      # Verify that a downloaded module matches the checksum in the metadata for this release.
+      #
+      # @param path [Pathname]
+      # @return [void]
+      def verify(path)
+        expected_md5 = file_md5
+        file_md5     = Digest::MD5.file(path).hexdigest
+        if expected_md5 != file_md5
+          raise ChecksumMismatch.new("Expected #{path} checksum to be #{expected_md5}, got #{file_md5}")
+        end
+      end
+
+      class ChecksumMismatch < StandardError
+      end
+
+    end
+  end
+end
