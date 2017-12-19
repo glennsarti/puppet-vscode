@@ -65,6 +65,10 @@
           ".pp",
           ".epp"
         ],
+        "filenames": [
+          "Puppetfile",
+          "puppetfile"
+        ],
         "configuration": "./languages/puppet.configuration.json"
       }
     ],
