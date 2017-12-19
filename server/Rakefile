@@ -52,6 +52,11 @@ task :gem_revendor do
       :directory => 'faraday',
       :github_repo => 'https://github.com/lostisland/faraday.git',
       :github_ref => 'v0.13.1',
+    },
+    {
+      :directory => 'multipart-post',
+      :github_repo => 'https://github.com/nicksieger/multipart-post.git',
+      :github_ref => 'v2.0.0',
     }
   ]
 

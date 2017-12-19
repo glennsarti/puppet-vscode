@@ -11,4 +11,4 @@ Note - To improve the packaging size, test files etc. were stripped from the Gem
 Gem List
 --------
 
-* puppet-lint (https://github.com/rodjek/puppet-lint.git ref 2.3.3)* puppet_forge (https://github.com/puppetlabs/forge-ruby.git ref v2.2.8)* faraday (https://github.com/lostisland/faraday.git ref v0.13.1)
+* puppet-lint (https://github.com/rodjek/puppet-lint.git ref 2.3.3)* puppet_forge (https://github.com/puppetlabs/forge-ruby.git ref v2.2.8)* faraday (https://github.com/lostisland/faraday.git ref v0.13.1)* multipart-post (https://github.com/nicksieger/multipart-post.git ref v2.0.0)
