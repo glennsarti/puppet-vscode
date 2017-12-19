@@ -1,13 +1,32 @@
 require 'r10k'
-require 'forwardable'
+# require 'forwardable'
 
-require 'log4r'
-require 'log4r/configurator'
-require 'r10k/logging/terminaloutputter'
+# require 'log4r'
+# require 'log4r/configurator'
+# require 'r10k/logging/terminaloutputter'
 
 module R10K::Logging
 
-  LOG_LEVELS = %w{DEBUG2 DEBUG1 DEBUG INFO NOTICE WARN ERROR FATAL}
+  class NullLogger
+    def debug1(data=nil, propagated=false)
+    end
+    def debug2(data=nil, propagated=false)
+    end
+    def debug(data=nil, propagated=false)
+    end
+    def info(data=nil, propagated=false)
+    end
+    def notice(data=nil, propagated=false)
+    end
+    def warn(data=nil, propagated=false)
+    end
+    def error(data=nil, propagated=false)
+    end
+    def fatal(data=nil, propagated=false)
+    end
+  end
+
+  # LOG_LEVELS = %w{DEBUG2 DEBUG1 DEBUG INFO NOTICE WARN ERROR FATAL}
 
   def logger_name
     self.class.to_s
@@ -15,95 +34,96 @@ module R10K::Logging
 
   def logger
     if @logger.nil?
-      name = logger_name
-      if Log4r::Logger[name]
-        @logger = Log4r::Logger[name]
-      else
-        @logger = Log4r::Logger.new(name)
-        @logger.add(R10K::Logging.outputter)
-      end
+      @logger = NullLogger.new()
+  #     name = logger_name
+  #     if Log4r::Logger[name]
+  #       @logger = Log4r::Logger[name]
+  #     else
+  #       @logger = Log4r::Logger.new(name)
+  #       @logger.add(R10K::Logging.outputter)
+  #     end
     end
     @logger
   end
 
-  class << self
+  # class << self
 
-    # Convert the input to a valid Log4r log level
-    #
-    # @param input [String, TrueClass] The level to parse. If TrueClass then
-    #   Log4r::INFO will be returned (indicating a generic raised verbosity),
-    #   if a string it will be parsed either as a numeric value or a textual
-    #   log level.
-    # @api private
-    # @return [Integer, NilClass] The numeric log level, or nil if the log
-    #   level is invalid.
-    def parse_level(input)
-      case input
-      when TrueClass
-        Log4r::INFO
-      when /\A\d+\Z/
-        Integer(input)
-      when String
-        const_name = input.upcase
-        if LOG_LEVELS.include?(const_name)
-          begin
-            Log4r.const_get(const_name.to_sym)
-          rescue NameError
-          end
-        end
-      end
-    end
+  #   # Convert the input to a valid Log4r log level
+  #   #
+  #   # @param input [String, TrueClass] The level to parse. If TrueClass then
+  #   #   Log4r::INFO will be returned (indicating a generic raised verbosity),
+  #   #   if a string it will be parsed either as a numeric value or a textual
+  #   #   log level.
+  #   # @api private
+  #   # @return [Integer, NilClass] The numeric log level, or nil if the log
+  #   #   level is invalid.
+  #   def parse_level(input)
+  #     case input
+  #     when TrueClass
+  #       Log4r::INFO
+  #     when /\A\d+\Z/
+  #       Integer(input)
+  #     when String
+  #       const_name = input.upcase
+  #       if LOG_LEVELS.include?(const_name)
+  #         begin
+  #           Log4r.const_get(const_name.to_sym)
+  #         rescue NameError
+  #         end
+  #       end
+  #     end
+  #   end
 
-    def level=(val)
-      level = parse_level(val)
-      if level.nil?
-        raise ArgumentError, _("Invalid log level '%{val}'. Valid levels are %{log_levels}") % {val: val, log_levels: LOG_LEVELS.map(&:downcase).inspect}
-      end
-      outputter.level = level
-      @level = level
+  #   def level=(val)
+  #     level = parse_level(val)
+  #     if level.nil?
+  #       raise ArgumentError, _("Invalid log level '%{val}'. Valid levels are %{log_levels}") % {val: val, log_levels: LOG_LEVELS.map(&:downcase).inspect}
+  #     end
+  #     outputter.level = level
+  #     @level = level
 
-      if level < Log4r::INFO
-        outputter.formatter = debug_formatter
-      else
-        outputter.formatter = default_formatter
-      end
-    end
+  #     if level < Log4r::INFO
+  #       outputter.formatter = debug_formatter
+  #     else
+  #       outputter.formatter = default_formatter
+  #     end
+  #   end
 
-    extend Forwardable
-    def_delegators :@outputter, :use_color, :use_color=
+  #   extend Forwardable
+  #   def_delegators :@outputter, :use_color, :use_color=
 
-    # @!attribute [r] level
-    #   @return [Integer] The current log level. Lower numbers correspond
-    #     to more verbose log levels.
-    attr_reader :level
+  #   # @!attribute [r] level
+  #   #   @return [Integer] The current log level. Lower numbers correspond
+  #   #     to more verbose log levels.
+  #   attr_reader :level
 
-    # @!attribute [r] formatter
-    #   @api private
-    #   @return [Log4r::Formatter]
-    attr_reader :formatter
+  #   # @!attribute [r] formatter
+  #   #   @api private
+  #   #   @return [Log4r::Formatter]
+  #   attr_reader :formatter
 
-    # @!attribute [r] outputter
-    #   @api private
-    #   @return [Log4r::Outputter]
-    attr_reader :outputter
+  #   # @!attribute [r] outputter
+  #   #   @api private
+  #   #   @return [Log4r::Outputter]
+  #   attr_reader :outputter
 
-    def default_formatter
-      Log4r::PatternFormatter.new(:pattern => '%l\t -> %m')
-    end
+  #   def default_formatter
+  #     Log4r::PatternFormatter.new(:pattern => '%l\t -> %m')
+  #   end
 
-    def debug_formatter
-      Log4r::PatternFormatter.new(:pattern => '[%d - %l] %m')
-    end
+  #   def debug_formatter
+  #     Log4r::PatternFormatter.new(:pattern => '[%d - %l] %m')
+  #   end
 
-    def default_outputter
-      R10K::Logging::TerminalOutputter.new('terminal', $stderr, :level => self.level, :formatter => formatter)
-    end
-  end
+  #   def default_outputter
+  #     R10K::Logging::TerminalOutputter.new('terminal', $stderr, :level => self.level, :formatter => formatter)
+  #   end
+  # end
 
-  Log4r::Configurator.custom_levels(*LOG_LEVELS)
-  Log4r::Logger.global.level = Log4r::ALL
+  # Log4r::Configurator.custom_levels(*LOG_LEVELS)
+  # Log4r::Logger.global.level = Log4r::ALL
 
-  @level     = Log4r::WARN
-  @formatter = default_formatter
-  @outputter = default_outputter
+  # @level     = Log4r::WARN
+  # @formatter = default_formatter
+  # @outputter = default_outputter
 end
