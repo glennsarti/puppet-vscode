@@ -4,6 +4,11 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'lib'))
 # Add the vendored gems into the load path
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'vendor', 'puppet-lint', 'lib'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'vendor', 'r10k', 'lib'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'vendor', 'puppet_forge', 'lib'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'vendor', 'multipart-post', 'lib'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'vendor', 'faraday', 'lib'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'vendor', 'faraday_middleware', 'lib'))
 
 require 'puppet-languageserver'
 
