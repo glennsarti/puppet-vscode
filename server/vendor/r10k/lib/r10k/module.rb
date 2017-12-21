@@ -8,6 +8,17 @@ module R10K::Module
     @klasses << klass
   end
 
+  #@ops_cache_update = Mutex.new
+  @module_metadata_cache = {}
+
+  def self.get_metadata_from_cache(cache_key)
+    @module_metadata_cache[cache_key]
+  end
+
+  def self.set_metadata_in_cache(cache_key, metadata)
+    @module_metadata_cache[cache_key] = metadata
+  end
+
   # Look up the implementing class and instantiate an object
   #
   # This method takes the arguments for normal object generation and checks all

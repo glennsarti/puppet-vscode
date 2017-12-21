@@ -1,7 +1,9 @@
 require 'pathname'
 require 'r10k/module'
-require 'r10k/util/purgeable'
+#require 'r10k/util/purgeable'
 require 'r10k/errors'
+
+# TODO Purge this class of unused stuff
 
 module R10K
 class Puppetfile
@@ -116,7 +118,7 @@ class Puppetfile
     @modules << mod
   end
 
-  include R10K::Util::Purgeable
+  # include R10K::Util::Purgeable
 
   def managed_directories
     self.load unless @loaded
@@ -155,32 +157,32 @@ class Puppetfile
 
   private
 
-  def puppetfile_contents
-    File.read(@puppetfile_path)
-  end
+  # def puppetfile_contents
+  #   File.read(@puppetfile_path)
+  # end
 
-  def resolve_install_path(path)
-    pn = Pathname.new(path)
+  # def resolve_install_path(path)
+  #   pn = Pathname.new(path)
 
-    unless pn.absolute?
-      pn = Pathname.new(File.join(basedir, path))
-    end
+  #   unless pn.absolute?
+  #     pn = Pathname.new(File.join(basedir, path))
+  #   end
 
-    # .cleanpath is as good as we can do without touching the filesystem.
-    # The .realpath methods will also choke if some of the intermediate
-    # paths are missing, even though we will create them later as needed.
-    pn.cleanpath.to_s
-  end
+  #   # .cleanpath is as good as we can do without touching the filesystem.
+  #   # The .realpath methods will also choke if some of the intermediate
+  #   # paths are missing, even though we will create them later as needed.
+  #   pn.cleanpath.to_s
+  # end
 
-  def validate_install_path(path, modname)
-    real_basedir = Pathname.new(basedir).cleanpath.to_s
+  # def validate_install_path(path, modname)
+  #   real_basedir = Pathname.new(basedir).cleanpath.to_s
 
-    unless /^#{Regexp.escape(real_basedir)}.*/ =~ path
-      raise R10K::Error.new("Puppetfile cannot manage content '#{modname}' outside of containing environment: #{path} is not within #{real_basedir}")
-    end
+  #   unless /^#{Regexp.escape(real_basedir)}.*/ =~ path
+  #     raise R10K::Error.new("Puppetfile cannot manage content '#{modname}' outside of containing environment: #{path} is not within #{real_basedir}")
+  #   end
 
-    true
-  end
+  #   true
+  # end
 
   class DSL
     # A barebones implementation of the Puppetfile DSL
