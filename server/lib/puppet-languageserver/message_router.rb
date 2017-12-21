@@ -273,11 +273,12 @@ TEXT
         file_uri = params['textDocument']['uri']
         content = params['textDocument']['text']
         documents.set_document(file_uri, content)
+        # TODO Should really use a queue system for diagnostics as they can be slow
         case document_type(file_uri)
         when :manifest
           reply_diagnostics(file_uri, PuppetLanguageServer::DocumentValidator.validate(content, @workspace))
         when :puppetfile
-          reply_diagnostics(file_uri, [])
+          reply_diagnostics(file_uri, PuppetLanguageServer::PuppetfileHelper.validate(content, @workspace))
         else
           send_show_message_notification(2, "Unable to validate #{file_uri}")
         end
@@ -292,11 +293,12 @@ TEXT
         file_uri = params['textDocument']['uri']
         content = params['contentChanges'][0]['text'] # TODO: Bad hardcoding zero
         documents.set_document(file_uri, content)
+        # TODO Should really use a queue system for diagnostics as they can be slow
         case document_type(file_uri)
         when :manifest
           reply_diagnostics(file_uri, PuppetLanguageServer::DocumentValidator.validate(content, @workspace))
         when :puppetfile
-          reply_diagnostics(file_uri, [])
+          reply_diagnostics(file_uri, PuppetLanguageServer::PuppetfileHelper.validate(content, @workspace))
         else
           reply_diagnostics(file_uri, [])
         end

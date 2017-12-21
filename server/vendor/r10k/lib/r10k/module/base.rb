@@ -135,7 +135,7 @@ class R10K::Module::Base
   end
 
   def find_load_location()
-    moniker = PuppetLanguageServer::PuppetfileHelper::PUPPETFILE_MONIKER
+    moniker = ::PuppetLanguageServer::R10K::Puppetfile::PUPPETFILE_MONIKER
     loc = Kernel.caller_locations
                 .select { |loc| loc.absolute_path == moniker }
                 .first

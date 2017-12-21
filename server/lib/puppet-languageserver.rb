@@ -6,8 +6,9 @@ begin
   require 'puppet-vscode'
 
   %w[json_rpc_handler message_router server_capabilities document_validator puppet_parser_helper puppet_helper
-    facter_helper completion_provider hover_provider definition_provider puppet_monkey_patches puppetfile_helper].each do |lib|
-    begin
+    facter_helper completion_provider hover_provider definition_provider puppet_monkey_patches puppetfile_helper
+    r10k/puppetfile r10k/validator].each do |lib|
+      begin
       require "puppet-languageserver/#{lib}"
     rescue LoadError
       require File.expand_path(File.join(File.dirname(__FILE__), 'puppet-languageserver', lib))
