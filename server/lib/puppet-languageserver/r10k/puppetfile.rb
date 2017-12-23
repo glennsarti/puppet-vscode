@@ -14,6 +14,24 @@ module PuppetLanguageServer
 
         puppetfile
       end
+
+      def self.object_under_cursor(content, line_num, char_num)
+        # This is faily niaive but the Puppetfile DSL is supposed to be simple.
+        # Could use Ruby AST parsing but it's probably overkill
+        begin
+          puppetfile = load_puppetfile(content)
+        rescue => _exception
+          return nil
+        end
+
+        # See if we're on a module name
+        puppetfile
+          .modules
+          .select { |i| i.puppetfile_line_number == line_num }
+          .each do |mod|
+            require 'pry'; binding.pry
+        end
+      end
     end
   end
 end
