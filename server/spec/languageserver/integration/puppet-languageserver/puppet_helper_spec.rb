@@ -27,14 +27,14 @@ describe 'puppet_helper' do
     it 'should get details about functions which do not error' do
       result = subject.function(good_function)
 
-      expect(result).to include(:name)
-      expect(result).to include(:type)
+      expect(result.doc).to_not be_nil
+      expect(result.type).to_not be_nil
     end
     it 'should get details about functions which error inside the function code' do
       result = subject.function(bad_function)
 
-      expect(result).to include(:name)
-      expect(result).to include(:type)
+      expect(result.doc).to_not be_nil
+      expect(result.type).to_not be_nil
     end
     it 'should not get details about functions which error during loading' do
       result = subject.function(unloadable_function)

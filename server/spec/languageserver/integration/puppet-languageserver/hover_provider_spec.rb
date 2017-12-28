@@ -4,6 +4,17 @@ describe 'hover_provider' do
   let(:subject) { PuppetLanguageServer::HoverProvider }
   let(:nil_response) { LanguageServer::Hover.create_nil_response }
 
+  before(:all) do
+    # Ensure the functions are loaded so that hover information is available
+    PuppetLanguageServer::PuppetHelper.load_functions unless PuppetLanguageServer::PuppetHelper.functions_loaded?
+
+    # Ensure the types are loaded so that hover information is available
+    PuppetLanguageServer::PuppetHelper.load_types unless PuppetLanguageServer::PuppetHelper.types_loaded?
+
+    # Ensure the classes are loaded so that hover information is available
+    PuppetLanguageServer::PuppetHelper.load_classes unless PuppetLanguageServer::PuppetHelper.classes_loaded?
+  end
+
   describe '#resolve' do
     let(:content) { <<-EOT
 user { 'Bob':
@@ -187,7 +198,7 @@ EOT
         let(:line_num) { 2 }
         let(:char_num) { 5 }
 
-        it 'should return property description' do
+        it 'should return parameter description' do
           result = subject.resolve(content, line_num, char_num)
 
           expect(result['contents']).to start_with("**name** Parameter\n")
@@ -198,7 +209,7 @@ EOT
         let(:line_num) { 2 }
         let(:char_num) { 10 }
 
-        it 'should return property description' do
+        it 'should return parameter description' do
           result = subject.resolve(content, line_num, char_num)
 
           expect(result['contents']).to start_with("**name** Parameter\n")
