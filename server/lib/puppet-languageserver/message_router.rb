@@ -278,7 +278,7 @@ TEXT
         when :manifest
           reply_diagnostics(file_uri, PuppetLanguageServer::DocumentValidator.validate(content, @workspace))
         when :puppetfile
-          reply_diagnostics(file_uri, PuppetLanguageServer::PuppetfileHelper.validate(content, @workspace))
+          reply_diagnostics(file_uri, PuppetLanguageServer::R10K::Validator.validate_puppetfile(content, @workspace))
         else
           send_show_message_notification(2, "Unable to validate #{file_uri}")
         end
@@ -298,7 +298,7 @@ TEXT
         when :manifest
           reply_diagnostics(file_uri, PuppetLanguageServer::DocumentValidator.validate(content, @workspace))
         when :puppetfile
-          reply_diagnostics(file_uri, PuppetLanguageServer::PuppetfileHelper.validate(content, @workspace))
+          reply_diagnostics(file_uri, PuppetLanguageServer::R10K::Validator.validate_puppetfile(content, @workspace))
         else
           reply_diagnostics(file_uri, [])
         end
