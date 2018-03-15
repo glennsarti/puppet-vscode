@@ -1,7 +1,7 @@
 require 'puppet/indirector/face'
 require 'pathname'
 
-%w[puppet_helper/cache puppet_helper/faux_objects].each do |lib|
+%w[puppet_helper/cache puppet_helper/file_cache puppet_helper/faux_objects].each do |lib|
  begin
    require "puppet-languageserver/#{lib}"
  rescue LoadError
