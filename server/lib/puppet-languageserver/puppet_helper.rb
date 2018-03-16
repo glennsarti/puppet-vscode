@@ -279,9 +279,11 @@ module PuppetLanguageServer
       @inmemory_cache.set(absolute_name, :type, nil)
       unless autoloader.loaded?(name)
         # This is an expensive call
+        #Puppet::Type.suppress_provider
         unless autoloader.load(name)
           PuppetLanguageServer.log_message(:error, "[PuppetHelper::load_type_file] type #{absolute_name} did not load")
         end
+        #Puppet::Type.unsuppress_provider
       end
 
       # Find the types that were loaded

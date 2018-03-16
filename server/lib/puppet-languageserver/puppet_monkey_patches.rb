@@ -28,12 +28,63 @@ module Puppet
   end
 end
 
+# # A class which looks like a standard Puppet autoloader but does nothing
+# module Puppet
+#   module Util
+#     class NullAutoloader
+#       def intialize(*)
+#       end
+
+#       def load(*)
+#         true
+#       end
+
+#       def loadall(*)
+#         true
+#       end
+
+#       def loaded?(*)
+#         false
+#       end
+
+#       def changed?(*)
+#         false
+#       end
+
+#       def files_to_load(*)
+#         []
+#       end
+#     end
+#   end
+# end
+
 # Add an additional method on Puppet Types to store their source location
 require 'puppet/type'
+#$suppress_provider_loading = false
 module Puppet
   class Type
     class << self
       attr_accessor :_source_location
+
+      # def providerloader
+      #   if suppress_provider?
+      #     Puppet::Util::NullAutoloader.new
+      #   else
+      #     @providerloader
+      #   end
+      # end
+
+      # def suppress_provider?
+      #   $suppress_provider_loading ||= false
+      # end
+
+      # def suppress_provider
+      #   $suppress_provider_loading = true
+      # end
+
+      # def unsuppress_provider
+      #   $suppress_provider_loading = false
+      # end
     end
   end
 end
