@@ -137,6 +137,7 @@ module PuppetLanguageServer
 
     # Class and Defined Type loading
     def self._load_default_classes
+      PuppetLanguageServer.log_message(:debug, "[PuppetHelper::_load_default_classes] Starting")
       @classes_loaded = false
       module_path_list = []
       # Add the base modulepath
@@ -257,7 +258,7 @@ module PuppetLanguageServer
       expanded_name = autoloader.expand(name)
       absolute_name = Puppet::Util::Autoload.get_file(expanded_name, env)
       if absolute_name.nil?
-        PuppetLanguageServer.log_message(:warning, "[PuppetHelper::load_type_file] Could not find absolute path of type #{name}")
+        PuppetLanguageServer.log_message(:warn, "[PuppetHelper::load_type_file] Could not find absolute path of type #{name}")
         return 0
       end
       # TODO: Add ignore cache switch
@@ -279,7 +280,7 @@ module PuppetLanguageServer
       unless autoloader.loaded?(name)
         # This is an expensive call
         unless autoloader.load(name)
-          PuppetLanguageServer.log_message(:error, "[PuppetHelper::load_type_file] type #{name} did not load")
+          PuppetLanguageServer.log_message(:error, "[PuppetHelper::load_type_file] type #{absolute_name} did not load")
         end
       end
 
@@ -304,7 +305,7 @@ module PuppetLanguageServer
         raise unless detail.name == :each && detail.receiver.nil?
       end
 
-      PuppetLanguageServer.log_message(:warning, "[PuppetHelper::load_type_file] type #{name} did not load any types") if types.empty?
+      PuppetLanguageServer.log_message(:warn, "[PuppetHelper::load_type_file] type #{absolute_name} did not load any types") if types.empty?
       @inmemory_cache.set(absolute_name, :type, types)
 
       types.count
@@ -313,6 +314,7 @@ module PuppetLanguageServer
 
     def self._load_default_types
       @default_types_loaded = false
+      PuppetLanguageServer.log_message(:debug, "[PuppetHelper::_load_default_types] Starting")
 
       # This is an expensive call
       # From https://github.com/puppetlabs/puppet/blob/ebd96213cab43bb2a8071b7ac0206c3ed0be8e58/lib/puppet/metatype/manager.rb#L182-L189
@@ -326,7 +328,7 @@ module PuppetLanguageServer
         begin
           type_count += load_type_file(name, autoloader, current_env)
         rescue StandardError => err
-          PuppetLanguageServer.log_message(:error, "[PuppetHelper::_load_default_types] Error loading type #{file}: #{err}")
+          PuppetLanguageServer.log_message(:error, "[PuppetHelper::_load_default_types] Error loading type #{file}: #{err} #{err.backtrace}")
         end
       end
 
@@ -341,7 +343,7 @@ module PuppetLanguageServer
       expanded_name = autoloader.expand(name)
       absolute_name = Puppet::Util::Autoload.get_file(expanded_name, env)
       if absolute_name.nil?
-        PuppetLanguageServer.log_message(:warning, "[PuppetHelper::load_function_file] Could not find absolute path of function #{file}")
+        PuppetLanguageServer.log_message(:warn, "[PuppetHelper::load_function_file] Could not find absolute path of function #{name}")
         return 0
       end
       # TODO: Add ignore cache switch
@@ -369,7 +371,7 @@ module PuppetLanguageServer
         funcs[obj.key] = obj
         function_count += 1
       end
-      PuppetLanguageServer.log_message(:warning, "[PuppetHelper::load_function_file] function #{name} did load any functions") if function_count.zero?
+      PuppetLanguageServer.log_message(:warn, "[PuppetHelper::load_function_file] file #{absolute_name} did load any functions") if function_count.zero?
       @inmemory_cache.set(absolute_name, :function, funcs)
 
       function_count
@@ -378,6 +380,7 @@ module PuppetLanguageServer
 
     def self._load_default_functions
       @default_functions_loaded = false
+      PuppetLanguageServer.log_message(:debug, "[PuppetHelper::_load_default_functions] Starting")
 
       autoloader = Puppet::Parser::Functions.autoloader
       current_env = Puppet.lookup(:current_environment)
@@ -414,7 +417,7 @@ module PuppetLanguageServer
         begin
           function_count += load_function_file(name, autoloader, current_env)
         rescue StandardError => err
-          PuppetLanguageServer.log_message(:error, "[PuppetHelper::_load_default_functions] Error loading function #{file}: #{err}")
+          PuppetLanguageServer.log_message(:error, "[PuppetHelper::_load_default_functions] Error loading function #{file}: #{err} #{err.backtrace}")
         end
       end
 
