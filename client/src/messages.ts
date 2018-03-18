@@ -53,9 +53,19 @@ export interface CompileNodeGraphResponse {
   data: string;
 }
 
+export namespace PuppetStringsRequest {
+  export const type = new RequestType<any, any, void, void>('puppet/generatePuppetStrings');
+}
+
+export interface PuppetStringsResponse {
+  error: string;
+  data: string;
+}
+
 export class PuppetCommandStrings{
   static PuppetResourceCommandId:string = 'extension.puppetResource';
   static PuppetNodeGraphToTheSideCommandId = 'extension.puppetShowNodeGraphToSide';
+  static PuppetStringsToTheSideCommandId = 'extension.puppetShowPuppetStringsToSide';
   static PuppetShowConnectionMenuCommandId = 'extension.puppetShowConnectionMenu';
   static PuppetShowConnectionLogsCommandId = 'extension.puppetShowConnectionLogs';
   static PuppetRestartSessionCommandId = 'extension.puppetRestartSession';

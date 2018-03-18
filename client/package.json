@@ -45,6 +45,7 @@
     "onCommand:extension.puppetLint",
     "onCommand:extension.puppetParserValidate",
     "onCommand:extension.puppetShowNodeGraphToSide",
+    "onCommand:extension.puppetShowPuppetStringsToSide",
     "onCommand:extension.puppetResource",
     "onCommand:extension.pdkNewModule",
     "onCommand:extension.pdkNewClass",
@@ -148,6 +149,15 @@
           "light": "./media/PreviewOnRightPane_16x.svg",
           "dark": "./media/PreviewOnRightPane_16x_dark.svg"
         }
+      },
+      {
+        "command": "extension.puppetShowPuppetStringsToSide",
+        "title": "Open Puppet Strings to the Side (Experimental)",
+        "category": "Puppet",
+        "icon": {
+          "light": "./media/PreviewOnRightPane_16x.svg",
+          "dark": "./media/PreviewOnRightPane_16x_dark.svg"
+        }
       }
     ],
     "menus": {
@@ -179,6 +189,10 @@
         },
         {
           "command": "extension.puppetShowNodeGraphToSide",
+          "when": "resourceLangId == 'puppet'"
+        },
+        {
+          "command": "extension.puppetShowPuppetStringsToSide",
           "when": "resourceLangId == 'puppet'"
         }
       ],
@@ -214,6 +228,11 @@
         },
         {
           "when": "resourceLangId == 'puppet'",
+          "command": "extension.puppetShowPuppetStringsToSide",
+          "group": "puppet"
+        },
+        {
+          "when": "resourceLangId == 'puppet'",
           "command": "extension.puppetResource",
           "group": "puppet"
         }
@@ -242,6 +261,11 @@
         {
           "when": "resourceLangId == 'puppet'",
           "command": "extension.puppetShowNodeGraphToSide",
+          "group": "puppet"
+        },
+        {
+          "when": "resourceLangId == 'puppet'",
+          "command": "extension.puppetShowPuppetStringsToSide",
           "group": "puppet"
         },
         {

@@ -14,13 +14,13 @@ export function isNodeGraphFile(document: vscode.TextDocument) {
     && document.uri.scheme !== 'puppet'; // prevent processing of own documents
 }
 
-export function getNodeGraphUri(uri: vscode.Uri) {
-  if (uri.scheme === 'puppet') {
+export function getNodeGraphUri(langID: string, uri: vscode.Uri) {
+  if (uri.scheme === langID) {
     return uri;
   }
 
   return uri.with({
-    scheme: 'puppet',
+    scheme: langID,
     path: uri.fsPath + '.rendered',
     query: uri.toString()
   });
@@ -31,7 +31,7 @@ export class PuppetNodeGraphContentProvider implements vscode.TextDocumentConten
   private _waiting: boolean = false;
   private _connectionManager: IConnectionManager = undefined;
   private _shownLanguageServerNotAvailable = false;
-  
+
   constructor(
     private context: vscode.ExtensionContext,
     private connMgr: IConnectionManager
@@ -115,7 +115,7 @@ export class PuppetNodeGraphContentProvider implements vscode.TextDocumentConten
   }
 }
 
-export function showNodeGraph(uri?: vscode.Uri, sideBySide: boolean = false) {
+export function showNodeGraph(langID:string, uri?: vscode.Uri, sideBySide: boolean = false) {
   let resource = uri;
   if (!(resource instanceof vscode.Uri)) {
     if (vscode.window.activeTextEditor) {
@@ -126,7 +126,7 @@ export function showNodeGraph(uri?: vscode.Uri, sideBySide: boolean = false) {
   }
 
   const thenable = vscode.commands.executeCommand('vscode.previewHtml',
-    getNodeGraphUri(resource),
+    getNodeGraphUri(langID, resource),
     getViewColumn(sideBySide),
     `Node Graph '${path.basename(resource.fsPath)}'`);
 
