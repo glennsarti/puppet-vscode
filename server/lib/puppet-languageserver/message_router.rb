@@ -140,6 +140,12 @@ TEXT
         content = resources.map(&:to_manifest).join("\n\n") + "\n"
         request.reply_result(LanguageServer::PuppetCompilation.create('data' => content))
 
+      when 'puppet/generatePuppetStrings'
+        data = "# Title\n\nTest markdown string\n"
+        error_content = nil
+        request.reply_result(LanguageServer::PuppetCompilation.create('data' => data,
+          'error' => error_content))
+
       when 'puppet/compileNodeGraph'
         file_uri = request.params['external']
         unless document_type(file_uri) == :manifest
