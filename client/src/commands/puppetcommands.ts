@@ -7,6 +7,10 @@ import { PuppetStringsContentProvider, getPuppetStringsUri, showPuppetStrings } 
 import { puppetResourceCommand } from '../commands/puppet/puppetResourceCommand';
 import { PuppetFormatDocumentProvider } from '../providers/puppetFormatDocumentProvider';
 
+import { MarkdownEngine } from '../markdown/markdownEngine';
+import { ExtensionContentSecurityPolicyArbiter } from '../markdown/security';
+import { loadMarkdownExtensions } from '../markdown/markdownExtensions';
+
 export function isATextDocumentContentPuppetFile(document: vscode.TextDocument) {
   return document.languageId === 'puppet'
     && document.uri.scheme !== 'puppet'; // prevent processing of own documents
@@ -62,7 +66,11 @@ export function setupPuppetCommands(langID:string, connManager:IConnectionManage
     }
   }));
 
-  const puppetStringsContentProvider = new PuppetStringsContentProvider(ctx, connManager);
+  const markdownEngine = new MarkdownEngine();
+  const cspArbiter = new ExtensionContentSecurityPolicyArbiter(ctx.globalState, ctx.workspaceState);
+
+  const puppetStringsContentProvider = new PuppetStringsContentProvider(ctx, connManager, markdownEngine, cspArbiter);
+  loadMarkdownExtensions(puppetStringsContentProvider, markdownEngine);
   const puppetStringsContentProviderRegistration = vscode.workspace.registerTextDocumentContentProvider(puppetStringsLangID, puppetStringsContentProvider);
 
   ctx.subscriptions.push(vscode.workspace.onDidSaveTextDocument(document => {
