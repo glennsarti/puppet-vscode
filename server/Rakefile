@@ -42,6 +42,16 @@ task :gem_revendor do
       :directory => 'puppet-lint',
       :github_repo => 'https://github.com/rodjek/puppet-lint.git',
       :github_ref => '2.3.3',
+    },
+    {
+      :directory => 'puppet-strings',
+      :github_repo => 'https://github.com/puppetlabs/puppet-strings.git',
+      :github_ref => '1.2.1',
+    },
+    {
+      :directory => 'yard',
+      :github_repo => 'https://github.com/lsegal/yard.git',
+      :github_ref => 'v0.9.12',
     }
   ]
 
@@ -85,7 +95,7 @@ Gem List
 --------
 
 HEREDOC
-  gem_list.each { |vendor| readme += "* #{vendor[:directory]} (#{vendor[:github_repo]} ref #{vendor[:github_ref]})"}
+  gem_list.each { |vendor| readme += "* #{vendor[:directory]} (#{vendor[:github_repo]} ref #{vendor[:github_ref]})\n"}
   File.open(File.join(vendor_dir,'README.md'), 'wb') { |file| file.write(readme + "\n") }
 end
 

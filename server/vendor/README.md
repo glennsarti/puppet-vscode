@@ -12,3 +12,6 @@ Gem List
 --------
 
 * puppet-lint (https://github.com/rodjek/puppet-lint.git ref 2.3.3)
+* puppet-strings (https://github.com/puppetlabs/puppet-strings.git ref 1.2.1)
+* yard (https://github.com/lsegal/yard.git ref v0.9.12)
+

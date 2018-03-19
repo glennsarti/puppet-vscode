@@ -1,0 +1,43 @@
+## MAC OS
+.DS_Store
+
+## TEXTMATE
+*.tmproj
+tmtags
+
+## EMACS
+*~
+\#*
+.\#*
+
+## VIM
+*.swp
+/tags
+
+## BUNDLER
+.bundle
+Gemfile.lock
+
+## YARD
+.yardoc
+.yardwarns
+
+## MODULE BUILDS
+**/pkg
+
+## RubyMine
+/.idea/
+
+## rvm/rbenv
+/.ruby-version
+
+## YARD output
+/doc/
+
+## Acceptance test artifacts
+/log/
+/*.gem
+/spec/acceptance/nodesets/
+
+## local coverage results
+/coverage/
