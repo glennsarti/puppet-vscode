@@ -251,8 +251,8 @@ export class PuppetStringsContentProvider implements vscode.TextDocumentContentP
       const initialData = {
         previewUri: uri.toString(),
         source: sourceUri.toString(),
-        scrollPreviewWithEditorSelection: config.scrollPreviewWithEditorSelection,
-        scrollEditorWithPreview: config.scrollEditorWithPreview,
+        scrollPreviewWithEditorSelection: false, //config.scrollPreviewWithEditorSelection,
+        scrollEditorWithPreview: false, //config.scrollEditorWithPreview,
         doubleClickToSwitchToEditor: config.doubleClickToSwitchToEditor,
         disableSecurityWarnings: this.cspArbiter.shouldDisableSecurityWarnings()
       };
