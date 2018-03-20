@@ -6,7 +6,7 @@ begin
   require 'puppet-vscode'
 
   %w[json_rpc_handler message_router server_capabilities document_validator puppet_parser_helper puppet_helper
-     facter_helper completion_provider hover_provider definition_provider puppet_monkey_patches].each do |lib|
+     facter_helper completion_provider hover_provider definition_provider puppet_monkey_patches puppet_strings/generate_puppet_strings].each do |lib|
     begin
       require "puppet-languageserver/#{lib}"
     rescue LoadError

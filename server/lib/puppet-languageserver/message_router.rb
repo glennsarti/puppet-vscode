@@ -141,7 +141,9 @@ TEXT
         request.reply_result(LanguageServer::PuppetCompilation.create('data' => content))
 
       when 'puppet/generatePuppetStrings'
-        data = "# Title\n\nTest markdown string\n"
+        # TODO: Won't somebody think of the errors!!
+        data = PuppetLanguageServer::PuppetStrings.render({ :workspace => @workspace })
+
         error_content = nil
         request.reply_result(LanguageServer::PuppetCompilation.create('data' => data,
           'error' => error_content))
