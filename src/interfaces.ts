@@ -16,20 +16,20 @@ export enum ConnectionType {
   Remote
 }
 
-export enum ProtocolType {
-  UNKNOWN,
-  STDIO,
-  TCP
-}
+// export enum ProtocolType {
+//   UNKNOWN,
+//   STDIO,
+//   TCP
+// }
 
 export interface IConnectionConfiguration {
-  type: ConnectionType;
-  protocol: ProtocolType;
-  host: string;
-  port: number;
-  timeout: number;
-  enableFileCache: boolean;
-  debugFilePath: string;
+  // type: ConnectionType;
+  // protocol: ProtocolType;
+  // host: string;
+  // port: number;
+  // timeout: number;
+  // enableFileCache: boolean;
+  // debugFilePath: string;
   puppetBaseDir: string;
   languageServerPath: string;
   rubydir: string;
@@ -49,7 +49,26 @@ export interface IConnectionConfiguration {
   pdkGemVerDir:string; 
 }
 
-export enum PuppetInstallType{
-  PDK    = "pdk",
-  PUPPET = "agent",
+// export enum PuppetInstallType{
+//   PDK    = "pdk",
+//   PUPPET = "puppet",
+// }
+
+export interface IRubyConfiguration {
+  puppetBaseDir: string;
+  languageServerPath: string;
+  rubydir: string;
+  rubylib: string;
+  environmentPath: string;
+  sslCertFile: string;
+  sslCertDir: string;
+  languageServerCommandLine: Array<string>;
+
+  pdkBinDir:string;
+  pdkRubyLib:string;
+  pdkRubyVerDir:string;
+  pdkGemDir:string;
+  pdkRubyDir:string;
+  pdkRubyBinDir:string;
+  pdkGemVerDir:string; 
 }

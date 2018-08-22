@@ -3,7 +3,7 @@
 import vscode = require("vscode");
 import { LogLevel } from './logging'; // TODO: Should this be in settings or logging?  Seems like a setting personally...
 
-export enum InstallType {
+export enum PuppetInstallType {
   pdk = "pdk",
   agent = "agent"
 }
@@ -83,7 +83,7 @@ export function fromWorkspace(): ISettings {
     editorService: workspaceConfig.get<IEditorServiceSettings>("editorService", defaultEditorServiceSettings),
     format: workspaceConfig.get<IFormatSettings>("format", defaultFormatSettings),
     installDirectory: workspaceConfig.get<string>("installDirectory", undefined),
-    installType: workspaceConfig.get<InstallType>("installType", InstallType.agent),
+    installType: workspaceConfig.get<PuppetInstallType>("installType", PuppetInstallType.agent),
     lint: workspaceConfig.get<ILintSettings>("lint", defaultLintSettings),
     pdk: workspaceConfig.get<IPDKSettings>("pdk", defaultPDKSettings)
   };

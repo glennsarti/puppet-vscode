@@ -1,6 +1,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
+import * as settings from '../settings';
 import * as logging from '../logging';
 
 export class OutputChannelLogger implements logging.ILogger {
@@ -9,11 +10,10 @@ export class OutputChannelLogger implements logging.ILogger {
   // Minimum log level that is shown to users on logChannel
   private minimumUserLogLevel: logging.LogLevel;
 
-  constructor() {
+  constructor(config:settings.ISettings) {
     this.logChannel = vscode.window.createOutputChannel('Puppet');
 
-    let config = vscode.workspace.getConfiguration('puppet');
-    let logLevelName = config['languageclient']['minimumUserLogLevel'];
+    let logLevelName = config.editorService.loglevel;
     let logLevel = this.logLevelFromString(logLevelName);
 
     if (logLevel === undefined) {

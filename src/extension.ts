@@ -4,12 +4,14 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 
 import { ConnectionManager } from './connection';
-import { ConnectionConfiguration } from './configuration';
+import { RubyConfiguration } from './configuration';
 import { OutputChannelLogger } from './logging/outputchannel';
 import { Reporter } from './telemetry/telemetry';
 import { setupPuppetCommands } from './commands/puppetcommands';
 import { setupPDKCommands } from './commands/pdkcommands';
 import { PuppetStatusBar } from './PuppetStatusBar';
+
+import * as settings from './settings';
 
 var connManager: ConnectionManager;
 var commandsRegistered = false;
@@ -22,17 +24,20 @@ export function activate(context: vscode.ExtensionContext) {
 
   notifyOnNewExtensionVersion(context, puppetExtensionVersion);
 
-  context.subscriptions.push(new Reporter(context));
-  var logger = new OutputChannelLogger();
-  var statusBar = new PuppetStatusBar(langID);
-  var configSettings = new ConnectionConfiguration();
+  const extSettings = settings.fromLegacyWorkspace();
 
-  if (!fs.existsSync(configSettings.puppetBaseDir)) {
-    logger.error('Could not find a valid Puppet installation at ' + configSettings.puppetBaseDir);
+  context.subscriptions.push(new Reporter(context));
+  var logger = new OutputChannelLogger(extSettings);
+  var statusBar = new PuppetStatusBar(langID);
+  var rubySettings = new RubyConfiguration(extSettings);
+
+  // TODO: If the editorService is disabled then, this check is not required.
+  if (!fs.existsSync(rubySettings.puppetBaseDir)) {
+    logger.error('Could not find a valid Puppet installation at ' + rubySettings.puppetBaseDir);
     vscode.window
       .showErrorMessage(
         `Could not find a valid Puppet installation at '${
-          configSettings.puppetBaseDir
+          rubySettings.puppetBaseDir
         }'. While syntax highlighting and grammar detection will still work, intellisense and other advanced features will not.`,
         { modal: false },
         { title: 'Troubleshooting Information' }
@@ -50,10 +55,10 @@ export function activate(context: vscode.ExtensionContext) {
       });
     return null;
   } else {
-    logger.debug('Found a valid Puppet installation at ' + configSettings.puppetDir);
+    logger.debug('Found a valid Puppet installation at ' + rubySettings.puppetDir);
   }
 
-  connManager = new ConnectionManager(context, logger, statusBar, configSettings);
+  connManager = new ConnectionManager(context, logger, statusBar, rubySettings);
 
   if (!commandsRegistered) {
     logger.debug('Configuring commands');
