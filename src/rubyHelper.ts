@@ -2,14 +2,15 @@ import path = require('path');
 import fs = require('fs');
 import cp = require('child_process');
 import { ILogger } from './logging';
-import { IConnectionConfiguration, PuppetInstallType } from './interfaces';
+import { IRubyConfiguration } from './interfaces';
 import { PathResolver } from './configuration/pathResolver';
+import { PuppetInstallType } from './settings';
 
 export class RubyHelper {
 
   public static getRubyEnvFromConfiguration(
     rubyFile:string,
-    connectionConfiguration: IConnectionConfiguration,
+    rubyConfiguration: IRubyConfiguration,
     logger: ILogger
   ):{
     command: string;
@@ -35,26 +36,26 @@ export class RubyHelper {
 
     let command = '';
     let logPrefix: string='';
-    switch(connectionConfiguration.puppetInstallType){
-      case PuppetInstallType.PDK:
+    switch(rubyConfiguration.puppetInstallType){
+      case PuppetInstallType.pdk:
         logPrefix                        = '[getRubyEnvFromPDK] ';
-        spawn_options.env.DEVKIT_BASEDIR = connectionConfiguration.puppetBaseDir;
-        spawn_options.env.RUBY_DIR       = connectionConfiguration.pdkRubyDir;
-        spawn_options.env.RUBYLIB        = new Array(connectionConfiguration.pdkRubyLib, spawn_options.env.RUBYLIB).join(PathResolver.pathEnvSeparator());
-        spawn_options.env.PATH           = new Array(connectionConfiguration.pdkBinDir, connectionConfiguration.pdkRubyBinDir, spawn_options.env.PATH).join(PathResolver.pathEnvSeparator());
+        spawn_options.env.DEVKIT_BASEDIR = rubyConfiguration.puppetBaseDir;
+        spawn_options.env.RUBY_DIR       = rubyConfiguration.pdkRubyDir;
+        spawn_options.env.RUBYLIB        = new Array(rubyConfiguration.pdkRubyLib, spawn_options.env.RUBYLIB).join(PathResolver.pathEnvSeparator());
+        spawn_options.env.PATH           = new Array(rubyConfiguration.pdkBinDir, rubyConfiguration.pdkRubyBinDir, spawn_options.env.PATH).join(PathResolver.pathEnvSeparator());
         spawn_options.env.RUBYOPT        = 'rubygems';
-        spawn_options.env.GEM_HOME       = connectionConfiguration.pdkGemDir;
-        spawn_options.env.GEM_PATH       = new Array(connectionConfiguration.pdkGemVerDir, connectionConfiguration.pdkGemDir, connectionConfiguration.pdkRubyVerDir).join(PathResolver.pathEnvSeparator());
-        command                          = path.join(connectionConfiguration.pdkRubyDir, 'bin', 'ruby');
+        spawn_options.env.GEM_HOME       = rubyConfiguration.pdkGemDir;
+        spawn_options.env.GEM_PATH       = new Array(rubyConfiguration.pdkGemVerDir, rubyConfiguration.pdkGemDir, rubyConfiguration.pdkRubyVerDir).join(PathResolver.pathEnvSeparator());
+        command                          = path.join(rubyConfiguration.pdkRubyDir, 'bin', 'ruby');
         break;
-      case PuppetInstallType.PUPPET:
+      case PuppetInstallType.agent:
         logPrefix                       = '[getRubyExecFromPuppetAgent] ';
-        spawn_options.env.RUBY_DIR      = connectionConfiguration.rubydir;
-        spawn_options.env.PATH          = new Array(connectionConfiguration.environmentPath, spawn_options.env.PATH).join(PathResolver.pathEnvSeparator());
-        spawn_options.env.RUBYLIB       = new Array(connectionConfiguration.rubylib, spawn_options.env.RUBYLIB).join(PathResolver.pathEnvSeparator());
+        spawn_options.env.RUBY_DIR      = rubyConfiguration.rubydir;
+        spawn_options.env.PATH          = new Array(rubyConfiguration.environmentPath, spawn_options.env.PATH).join(PathResolver.pathEnvSeparator());
+        spawn_options.env.RUBYLIB       = new Array(rubyConfiguration.rubylib, spawn_options.env.RUBYLIB).join(PathResolver.pathEnvSeparator());
         spawn_options.env.RUBYOPT       = 'rubygems';
-        spawn_options.env.SSL_CERT_FILE = connectionConfiguration.sslCertFile;
-        spawn_options.env.SSL_CERT_DIR  = connectionConfiguration.sslCertDir;
+        spawn_options.env.SSL_CERT_FILE = rubyConfiguration.sslCertFile;
+        spawn_options.env.SSL_CERT_DIR  = rubyConfiguration.sslCertDir;
         command                         = 'ruby';
         break;
     }

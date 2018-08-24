@@ -2,17 +2,27 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as settings from './settings';
+import { ISettings, PuppetInstallType } from './settings';
 
 //import { IConnectionConfiguration, ConnectionType, ProtocolType, PuppetInstallType, IRubyConfiguration } from './interfaces';
 import { IRubyConfiguration } from './interfaces';
 import { PathResolver } from './configuration/pathResolver';
 
 export class RubyConfiguration implements IRubyConfiguration {
-  private config: settings.ISettings;
+  private config: ISettings;
 
-  constructor(config: settings.ISettings) {
+  constructor(config: ISettings) {
     this.config = config;
+  }
+
+  get puppetInstallType(): PuppetInstallType {
+    switch (this.config.installType) {
+      case PuppetInstallType.agent:
+        return PuppetInstallType.agent;
+
+      default:
+        return PuppetInstallType.pdk;
+    }
   }
 
   get puppetBaseDir(): string {

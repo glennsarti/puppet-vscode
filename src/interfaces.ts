@@ -1,5 +1,8 @@
 'use strict';
 
+import { PuppetInstallType } from './settings';
+
+
 // Only add simple interfaces here. No import's allowed
 
 export enum ConnectionStatus {
@@ -10,11 +13,11 @@ export enum ConnectionStatus {
   Failed
 }
 
-export enum ConnectionType {
-  Unknown,
-  Local,
-  Remote
-}
+// export enum ConnectionType {
+//   Unknown,
+//   Local,
+//   Remote
+// }
 
 // export enum ProtocolType {
 //   UNKNOWN,
@@ -55,6 +58,7 @@ export interface IConnectionConfiguration {
 // }
 
 export interface IRubyConfiguration {
+  puppetInstallType:PuppetInstallType; 
   puppetBaseDir: string;
   languageServerPath: string;
   rubydir: string;

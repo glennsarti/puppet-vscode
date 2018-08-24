@@ -79,6 +79,7 @@ export function fromWorkspace(): ISettings {
 
   const workspaceConfig: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(workspaceSectionName);
 
+  // TODO: What if the wrong type is passed through? will it blow up?
   return {
     editorService: workspaceConfig.get<IEditorServiceSettings>("editorService", defaultEditorServiceSettings),
     format: workspaceConfig.get<IFormatSettings>("format", defaultFormatSettings),

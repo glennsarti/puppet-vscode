@@ -35,6 +35,7 @@ export class PuppetLanguageClient {
     this.statusBarItem = statusBarItem;
     this.logger = logger;
 
+    // TODO: Need a better title than this!
     var title = `tcp lang server (host ${this.host} port ${this.port})`;
 
     this.languageServerClient = new LanguageClient(title, this.serverOptions, this.clientOptions);
