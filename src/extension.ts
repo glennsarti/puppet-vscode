@@ -16,7 +16,7 @@ import { ConnectionHandler } from './handler';
 import { DockerConnectionHandler } from './handlers/docker';
 import { StdioConnectionHandler } from './handlers/stdio';
 import { TcpConnectionHandler } from './handlers/tcp';
-import { ConnectionType, ProtocolType } from './settings';
+import { ConnectionType, ProtocolType, PuppetInstallType } from './settings';
 import { ILogger } from './logging';
 import { OutputChannelLogger } from './logging/outputchannel';
 //import { PuppetStatusBar } from './PuppetStatusBar';
@@ -133,12 +133,23 @@ function checkInstallDirectory(config: IAggregateConfiguration, logger: ILogger)
 
   // we want to check directory if STDIO or Local TCP
   if (!fs.existsSync(config.ruby.puppetBaseDir)) {
-    showErrorMessage(
-      `Could not find a valid Puppet installation at '${
+    let message = '';
+    if(config.workspace.installType === PuppetInstallType.AUTO){
+      let m = [
+        'The extension failed to find a Puppet installation automatically in the default locations for PDK and for Puppet Agent.',
+        'While syntax highlighting and grammar detection will still work, intellisense and other advanced features will not.',
+      ];
+      message = m.join(' ');
+    }else{
+      message = `Could not find a valid Puppet installation at '${
         config.ruby.puppetBaseDir
-      }'. While syntax highlighting and grammar detection will still work, intellisense and other advanced features will not.`,
-      'Troubleshooting Information',
-      'https://github.com/lingua-pupuli/puppet-vscode#experience-a-problem',
+      }'. While syntax highlighting and grammar detection will still work, intellisense and other advanced features will not.`;
+    }
+
+    showErrorMessage(
+      message,
+      'Configuration Information',
+      'https://github.com/lingua-pupuli/puppet-vscode#configuration',
       logger
     );
     return false;

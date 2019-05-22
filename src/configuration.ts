@@ -180,32 +180,42 @@ export class AggregateConfiguration implements IAggregateConfiguration {
       return settings.installDirectory;
     }
 
-    let programFiles = PathResolver.getprogramFiles();
     switch (settings.installType) {
+      case PuppetInstallType.AUTO:
+        if(fs.existsSync(this.getPdkBasePath())){
+          return this.getPdkBasePath();
+        }else if(fs.existsSync(this.getAgentBasePath())){
+          return this.getAgentBasePath();
+        }
       case PuppetInstallType.PDK:
-        switch (process.platform) {
-          case 'win32':
-            return path.join(programFiles, 'Puppet Labs', 'DevelopmentKit');
-          default:
-            return path.join(programFiles, 'puppetlabs', 'pdk');
-        }
+        return this.getPdkBasePath();
       case PuppetInstallType.PUPPET:
-        switch (process.platform) {
-          case 'win32':
-            // On Windows we have a subfolder called 'Puppet' that has 
-            // every product underneath 
-            return path.join(programFiles, 'Puppet Labs', 'Puppet');
-          default:
-            // On *nix we don't have a sub folder called 'Puppet' 
-            return path.join(programFiles, 'puppetlabs');
-        }
+        return this.getAgentBasePath();
       default:
-        switch (process.platform) {
-          case 'win32':
-            return path.join(programFiles, 'Puppet Labs', 'DevelopmentKit');
-          default:
-            return path.join(programFiles, 'puppetlabs', 'pdk');
-        }
+        return this.getPdkBasePath();
+    }
+  }
+
+  private getAgentBasePath() {
+    let programFiles = PathResolver.getprogramFiles();
+    switch (process.platform) {
+      case 'win32':
+        // On Windows we have a subfolder called 'Puppet' that has 
+        // every product underneath 
+        return path.join(programFiles, 'Puppet Labs', 'Puppet');
+      default:
+        // On *nix we don't have a sub folder called 'Puppet' 
+        return path.join(programFiles, 'puppetlabs');
+    }
+  }
+
+  private getPdkBasePath() {
+    let programFiles = PathResolver.getprogramFiles();
+    switch (process.platform) {
+      case 'win32':
+        return path.join(programFiles, 'Puppet Labs', 'DevelopmentKit');
+      default:
+        return path.join(programFiles, 'puppetlabs', 'pdk');
     }
   }
 
