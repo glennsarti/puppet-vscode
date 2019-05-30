@@ -63,6 +63,20 @@ export class AggregateConfiguration implements IAggregateConfiguration {
   constructor(settings:ISettings) {
     this.workspace = settings;
 
+    // If the user has set the installType to 'auto' then we need
+    // to resolve which install type we will actually use
+    if (settings.installType === PuppetInstallType.AUTO) {
+      if (fs.existsSync(this.getPdkBasePath())) {
+        settings.installType = PuppetInstallType.PDK;
+      } else if(fs.existsSync(this.getAgentBasePath())) {
+        settings.installType = PuppetInstallType.PUPPET;
+      } else {
+        // We can't automatically figure it out so, assume PDK
+        // TODO: Should we log this?
+        settings.installType = PuppetInstallType.PDK;
+      }
+    }
+
     const puppetBaseDir = this.calculatePuppetBaseDir(settings);
     const puppetDir = this.safeJoin(puppetBaseDir, 'puppet');
     const facterDir = this.safeJoin(puppetBaseDir, 'facter');
@@ -181,12 +195,6 @@ export class AggregateConfiguration implements IAggregateConfiguration {
     }
 
     switch (settings.installType) {
-      case PuppetInstallType.AUTO:
-        if(fs.existsSync(this.getPdkBasePath())){
-          return this.getPdkBasePath();
-        }else if(fs.existsSync(this.getAgentBasePath())){
-          return this.getAgentBasePath();
-        }
       case PuppetInstallType.PDK:
         return this.getPdkBasePath();
       case PuppetInstallType.PUPPET:
